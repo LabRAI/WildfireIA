@@ -1,0 +1,15 @@
+numpy
+pandas
+scipy
+scikit-learn
+matplotlib
+pyarrow
+tqdm
+xgboost
+torch
+geopandas
+rasterio
+pyogrio
+pyproj
+shapely
+fiona

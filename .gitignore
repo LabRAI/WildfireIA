@@ -214,5 +214,18 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+# WildfireIA local data and generated artifacts
+data/
+experiments/
+logs/
+results/
+outputs/
+release/
+*.pt
+*.pth
+*.ckpt
+*.npy
+*.npz
+
 # Streamlit
 .streamlit/secrets.toml
