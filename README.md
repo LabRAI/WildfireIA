@@ -1,17 +1,28 @@
-# WildfireIA
+<h1 align="center">WildfireIA</h1>
 
-### Can Environmental Data at Fire Discovery Time Predict Whether a Wildfire Will Escape Initial Attack?
+<h3 align="center">A Nationwide Benchmark for Wildfire Initial Attack Failure Prediction with Public Environmental Data</h3>
 
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](#quick-start)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Dataset](https://img.shields.io/badge/HuggingFace-canonical%20data-yellow.svg)](https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA)
-[![Reproducible](https://img.shields.io/badge/reproducible-benchmark-lightgrey.svg)](#quick-start)
+<p align="center">
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python 3.10+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"></a>
+  <a href="https://github.com/LabRAI/WildfireIA/stargazers"><img src="https://img.shields.io/github/stars/LabRAI/WildfireIA?style=social" alt="GitHub stars"></a>
+  <a href="https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA"><img src="https://img.shields.io/badge/HuggingFace-canonical%20data-yellow.svg" alt="Hugging Face dataset"></a>
+  <a href="https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fhuggingface.co%2Fapi%2Fdatasets%2FWildfireIA%2FAnonymous-WildfireIA&query=downloads&label=HF%20downloads&color=orange" alt="Hugging Face downloads"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/reproducible-benchmark-lightgrey.svg" alt="Reproducible benchmark"></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="#dataset-release">Dataset</a> ·
+  <a href="#canonical-data-and-input-contracts">Input Contracts</a> ·
+  <a href="#experiments">Experiments</a> ·
+  <a href="#supported-models">Models</a> ·
+  <a href="#repository-scripts">Scripts</a>
+</p>
 
 WildfireIA is an event-level benchmark for predicting whether a newly discovered wildfire will escape initial attack using public information available at discovery time. The repository contains the code to build model-ready caches from released canonical tables, train tabular, temporal, spatial, and spatiotemporal baselines, and summarize the paper experiments.
 
 Code is maintained by the Responsible AI Lab at Florida State University.
-
-[Quick Start](#quick-start) · [Dataset](#dataset-release) · [Input Contracts](#canonical-data-and-input-contracts) · [Experiments](#experiments) · [Models](#supported-models) · [Scripts](#repository-scripts)
 
 ---
 
