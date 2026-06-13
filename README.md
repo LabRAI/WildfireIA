@@ -1,30 +1,46 @@
 # WildfireIA
 
-Official implementation for **WildfireIA**, a benchmark for predicting whether a
-wildfire will escape initial attack from public information available at fire
-discovery time.
+### Can Environmental Data at Fire Discovery Time Predict Whether a Wildfire Will Escape Initial Attack?
+
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](#quick-start)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Dataset](https://img.shields.io/badge/HuggingFace-canonical%20data-yellow.svg)](https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA)
+[![Reproducible](https://img.shields.io/badge/reproducible-benchmark-lightgrey.svg)](#quick-start)
+
+WildfireIA is an event-level benchmark for predicting whether a newly discovered wildfire will escape initial attack using public information available at discovery time. The repository contains the code to build model-ready caches from released canonical tables, train tabular, temporal, spatial, and spatiotemporal baselines, and summarize the paper experiments.
 
 Code is maintained by the Responsible AI Lab at Florida State University.
 
-Dataset release:
+[Quick Start](#quick-start) · [Dataset](#dataset-release) · [Input Contracts](#canonical-data-and-input-contracts) · [Experiments](#experiments) · [Models](#supported-models) · [Scripts](#repository-scripts)
 
-<https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA>
+---
 
-The dataset repository contains canonical benchmark tables and Croissant
-metadata. It does not contain model-ready caches. After cloning this code
-repository, place the canonical tables at the path below and regenerate caches
-with `dataloader.py`.
+## What This Repository Provides
+
+| Component | Purpose |
+|:---|:---|
+| `pipeline.py` | Optional raw-data canonicalization entry point. Users who download the Hugging Face release do not need to run it. |
+| `dataloader.py` | Converts canonical tables into model-ready caches for each representation family. |
+| `train.py` | Trains and evaluates all supported baseline models. |
+| `summarize_*.py` | Aggregates full-input and ablation experiment outputs into result tables. |
+| Hugging Face dataset | Stores canonical benchmark tables and Croissant metadata. |
+
+The Hugging Face release contains canonical data, not prebuilt training caches. This keeps the data release smaller and makes cache generation reproducible from a fixed input contract.
+
+---
 
 ## Quick Start
 
-Clone this repository:
+The shortest path is: clone code, install packages, download canonical tables, build caches, and run one baseline.
+
+### 1. Clone the code
 
 ```bash
 git clone https://github.com/LabRAI/WildfireIA.git
 cd WildfireIA
 ```
 
-Install Python packages:
+### 2. Install packages
 
 ```bash
 python -m venv .venv
@@ -33,13 +49,11 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-PyTorch GPU wheels depend on the local CUDA version. If the default `torch`
-installation is not compatible with your system, install PyTorch following the
-official PyTorch instructions, then rerun `pip install -r requirements.txt`.
+PyTorch GPU wheels depend on the local CUDA version. If the default `torch` installation is not compatible with your machine, install PyTorch from the official PyTorch instructions first, then rerun `pip install -r requirements.txt`.
 
-Download the Hugging Face dataset into a temporary folder. The most portable
-method is `huggingface_hub`, which downloads Git LFS files without requiring a
-system `git-lfs` installation:
+### 3. Download the canonical dataset
+
+The most portable method is `huggingface_hub`, which downloads Git LFS files without requiring a system `git-lfs` installation:
 
 ```bash
 python - <<'PY'
@@ -53,29 +67,92 @@ snapshot_download(
 PY
 ```
 
-If `git-lfs` is already installed, this equivalent command also works:
+If `git-lfs` is installed, this equivalent command also works:
 
 ```bash
 git clone https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA hf_data
 ```
 
-Copy the canonical tables into this repository:
+Copy the canonical tables into the expected local path:
 
 ```bash
 mkdir -p data/canonical/raw_feature_tables
 rsync -a hf_data/data/canonical/raw_feature_tables/ data/canonical/raw_feature_tables/
 ```
 
-The expected path is:
+Expected path after copying:
 
 ```text
 data/canonical/raw_feature_tables/
 ```
 
-## Canonical Data and Input Contracts
+### 4. Build full-input caches for initial attack failure
 
-The Hugging Face release contains canonical tables, not prebuilt training
-caches. The main canonical files are:
+```bash
+python dataloader.py \
+  --base_dir . \
+  --canonical_dir data/canonical/raw_feature_tables \
+  --output_dir data/cache/model_ready \
+  --task ia_failure \
+  --representation all \
+  --weather_days 5 \
+  --input_protocol all \
+  --overwrite
+```
+
+### 5. Run a smoke baseline
+
+```bash
+python train.py \
+  --base_dir . \
+  --task ia_failure \
+  --experiment_type smoke \
+  --representation tabular \
+  --weather_days 5 \
+  --input_protocol all \
+  --model xgboost \
+  --seed 553371 \
+  --overwrite
+```
+
+The run writes outputs to:
+
+```text
+experiments/ia_failure/smoke/tabular/weather5_all/xgboost_seed553371/
+```
+
+Key files in each output directory:
+
+```text
+config.json
+metrics.json
+predictions_val.parquet
+predictions_test.parquet
+```
+
+Neural models also write checkpoints and training curves:
+
+```text
+best_checkpoint.pt
+last_checkpoint.pt
+history.csv
+loss_curve.png
+val_auprc_curve.png
+val_auroc_curve.png
+metric_curve.png
+```
+
+---
+
+## Dataset Release
+
+Dataset release:
+
+<https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA>
+
+The dataset repository contains canonical benchmark tables and Croissant metadata. It intentionally does not contain model-ready caches. The code in this repository regenerates caches from the canonical tables.
+
+Main canonical files:
 
 ```text
 fire_events_natural_2016_2020.parquet
@@ -90,7 +167,7 @@ population_features_natural_2016_2020.parquet
 event_*_patch_375m_*.parquet
 ```
 
-The manifests in the same folder define the data contract:
+Contract manifests:
 
 ```text
 feature_manifest_natural.json
@@ -99,13 +176,42 @@ temporal_protocol_manifest_natural.json
 event_patch_manifest_375m_natural.json
 ```
 
-These files list feature groups, forbidden target/leakage columns, task labels,
-weather-day windows, and the event-centered 375 m patch geometry. The patch
-contract is a 29 x 29 grid centered on each FPA-FOD Natural wildfire event,
-with 375 m cells in EPSG:5070.
+These manifests define feature groups, forbidden target or leakage columns, labels, weather-day windows, and the event-centered 375 m patch geometry.
 
-`dataloader.py` converts these canonical tables into model-ready caches. The
-supported `--input_protocol` values are:
+---
+
+## Canonical Data and Input Contracts
+
+`dataloader.py` converts canonical tables into four model-ready representation families:
+
+| Representation | Model input |
+|:---|:---|
+| `tabular` | Event-level feature vectors. |
+| `temporal` | Five-day weather and fire-danger sequences plus static event features. |
+| `spatial` | Event-centered 29 x 29 patches with 375 m cells. |
+| `spatiotemporal` | Five-day event-centered patch sequences. |
+
+For the official full-input initial-attack setting, generated cache shapes are:
+
+```text
+tabular:        X_train.npy        [22576, 6029]
+temporal:       X_seq_train.npy    [22576, 5, 15]
+                X_static_train.npy [22576, 5940]
+spatial:        X_train.npy        [22576, 121, 29, 29]
+spatiotemporal: X_train.npy        [22576, 5, 47, 29, 29]
+```
+
+Each cache directory also contains:
+
+```text
+metadata.json
+feature_names.json or channel_names.json
+sample_index_{split}.parquet
+fire_id_{split}.npy
+y_{split}.npy
+```
+
+Supported `--input_protocol` values:
 
 ```text
 metadata
@@ -131,72 +237,17 @@ all_without_access
 all_without_human
 ```
 
-For the official full-input setting, the generated Task 1 cache shapes are:
+---
 
-```text
-tabular:        X_train.npy        [22576, 6029]
-temporal:       X_seq_train.npy    [22576, 5, 15]
-                X_static_train.npy [22576, 5940]
-spatial:        X_train.npy        [22576, 121, 29, 29]
-spatiotemporal: X_train.npy        [22576, 5, 47, 29, 29]
-```
+## Experiments
 
-Each cache directory also contains `metadata.json`, feature/channel names,
-`sample_index_{split}.parquet`, `fire_id_{split}.npy`, and `y_{split}.npy`.
-
-Generate Task 1 model-ready caches:
-
-```bash
-python dataloader.py \
-  --base_dir . \
-  --canonical_dir data/canonical/raw_feature_tables \
-  --output_dir data/cache/model_ready \
-  --task ia_failure \
-  --representation all \
-  --weather_days 5 \
-  --input_protocol all \
-  --overwrite
-```
-
-Run one baseline:
-
-```bash
-python train.py \
-  --base_dir . \
-  --task ia_failure \
-  --experiment_type smoke \
-  --representation tabular \
-  --weather_days 5 \
-  --input_protocol all \
-  --model xgboost \
-  --seed 553371 \
-  --overwrite
-```
-
-The output is written to:
-
-```text
-experiments/ia_failure/smoke/tabular/weather5_all/xgboost_seed553371/
-```
-
-Important output files include:
-
-```text
-config.json
-metrics.json
-predictions_val.parquet
-predictions_test.parquet
-```
-
-## Main Experiment Pattern
-
-Experiment outputs follow this directory format:
+Experiment outputs follow one directory pattern:
 
 ```text
 experiments/{task}/{experiment_type}/{representation}/weather{days}_{protocol}/{model}_seed{seed}/
 ```
 
-Example full-input XGBoost run:
+### Full-input example
 
 ```bash
 python train.py \
@@ -211,7 +262,7 @@ python train.py \
   --overwrite
 ```
 
-Example spatial neural baseline:
+### Neural patch-model example
 
 ```bash
 python train.py \
@@ -231,7 +282,9 @@ python train.py \
   --overwrite
 ```
 
-For the containment-duration task, first generate caches:
+### Containment-duration target
+
+Generate caches:
 
 ```bash
 python dataloader.py \
@@ -245,7 +298,7 @@ python dataloader.py \
   --overwrite
 ```
 
-Then run a containment-duration model:
+Run a baseline:
 
 ```bash
 python train.py \
@@ -260,7 +313,7 @@ python train.py \
   --overwrite
 ```
 
-## Summarizing Results
+### Summaries
 
 After full experiments finish:
 
@@ -275,21 +328,40 @@ Summary CSV and Markdown files are written under:
 results/
 ```
 
-## Scripts
-
-- `pipeline.py`: optional raw-data canonicalization script. Users who download
-  the canonical tables from Hugging Face do not need to run it.
-- `dataloader.py`: converts canonical tables into model-ready caches.
-- `train.py`: trains tabular, temporal, spatial, and spatiotemporal baselines.
-- `summarize_*.py`: summarizes full-test and ablation experiment outputs.
+---
 
 ## Supported Models
 
-- Tabular: `logistic_regression`, `xgboost`, `mlp`
-- Temporal: `gru`, `tcn`, `transformer`
-- Spatial: `resnet18_unet`, `resnet50_unet`, `swin_unet`, `segformer`
-- Spatiotemporal: `convlstm`, `convgru`, `predrnn_v2`, `utae`, `swinlstm`,
-  `resnet3d`
+| Family | Models |
+|:---|:---|
+| Tabular | `logistic_regression`, `xgboost`, `mlp` |
+| Temporal | `gru`, `tcn`, `transformer` |
+| Spatial | `resnet18_unet`, `resnet50_unet`, `swin_unet`, `segformer` |
+| Spatiotemporal | `convlstm`, `convgru`, `predrnn_v2`, `utae`, `swinlstm`, `resnet3d` |
+
+---
+
+## Repository Scripts
+
+| Script | Description |
+|:---|:---|
+| `pipeline.py` | Optional raw-data canonicalization script. Not required when using the Hugging Face canonical release. |
+| `dataloader.py` | Builds model-ready caches from canonical tables. |
+| `train.py` | Trains and evaluates all supported baselines. |
+| `summarize_task1_full_all_seeds.py` | Summarizes initial-attack full-input runs. |
+| `summarize_task1_fpafod_plus_source_ablation.py` | Summarizes FPA-FOD plus one-source ablations. |
+| `summarize_task1_weather_days_ablation.py` | Summarizes weather-history ablations. |
+| `summarize_task1_leave_one_source_out.py` | Summarizes leave-one-source-out ablations. |
+| `summarize_task1_firms_ablation.py` | Summarizes FIRMS-only ablations. |
+| `summarize_task2_full_all_seeds.py` | Summarizes containment-duration runs. |
+
+---
+
+## Citation
+
+Citation information will be added with the public preprint.
+
+---
 
 ## License
 
