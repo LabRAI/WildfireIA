@@ -36,7 +36,7 @@ from sklearn.metrics import (
 )
 
 
-PROJECT_ROOT = Path(".")
+PROJECT_ROOT = Path(__file__).resolve().parent
 MODEL_READY_ROOT = Path("data/cache/model_ready")
 EXPERIMENT_ROOT = Path("experiments")
 

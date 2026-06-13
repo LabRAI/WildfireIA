@@ -13,3 +13,4 @@ pyogrio
 pyproj
 shapely
 fiona
+huggingface_hub
