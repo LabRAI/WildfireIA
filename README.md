@@ -12,6 +12,8 @@
 </p>
 
 <p align="center">
+  <a href="#how-to-cite">How To Cite</a> ·
+  <a href="#what-are-we-doing">What Are We Doing?</a> ·
   <a href="#quick-start">Quick Start</a> ·
   <a href="#dataset-release">Dataset</a> ·
   <a href="#canonical-data-and-input-contracts">Input Contracts</a> ·
@@ -27,6 +29,30 @@ Code is maintained by the Responsible AI Lab at Florida State University.
 <p align="center">
   <img src="assets/pipeline2.png" alt="WildfireIA canonical pipeline and dataloader overview" width="95%">
 </p>
+
+---
+
+## How To Cite
+
+If you use WildfireIA, the canonical data release, the model-ready cache builder, or the evaluation protocol, please cite the preprint:
+
+```bibtex
+@misc{xu2026wildfireia,
+  title={A Nationwide Benchmark for Wildfire Initial Attack Failure Prediction with Public Environmental Data},
+  author={Xu, Runyang and Cheng, Xueqi and Dong, Yushun},
+  year={2026},
+  note={Preprint},
+  url={https://github.com/LabRAI/WildfireIA}
+}
+```
+
+---
+
+## What Are We Doing?
+
+WildfireIA turns wildfire initial attack failure prediction into a reproducible national benchmark. The benchmark uses 38,128 naturally caused FPA-FOD wildfire events as the event backbone and aligns each event with public discovery-time or static information from FIRMS/VIIRS, gridMET, LANDFIRE, OpenStreetMap, and WorldPop. The goal is not only to train models, but to make different model families comparable under the same event unit, label rule, chronological split, input contract, forbidden-feature list, and metric suite.
+
+This repository provides the code needed to reproduce that protocol. `dataloader.py` converts the released canonical tables into tabular, temporal, spatial, and spatiotemporal model-ready caches. `train.py` evaluates classical and neural baselines under the same leakage-controlled setting. The summarization scripts aggregate full-input and ablation experiments so future work can compare against the same public benchmark instead of relying on private operational records or incompatible regional protocols.
 
 ---
 
