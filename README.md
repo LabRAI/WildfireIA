@@ -50,9 +50,11 @@ If you use WildfireIA, the canonical data release, the model-ready cache builder
 
 ## What Are We Doing?
 
-WildfireIA turns wildfire initial attack failure prediction into a reproducible national benchmark. The benchmark uses 38,128 naturally caused FPA-FOD wildfire events as the event backbone and aligns each event with public discovery-time or static information from FIRMS/VIIRS, gridMET, LANDFIRE, OpenStreetMap, and WorldPop. The goal is not only to train models, but to make different model families comparable under the same event unit, label rule, chronological split, input contract, forbidden-feature list, and metric suite.
+WildfireIA turns wildfire initial attack failure prediction into a reusable, event-level benchmark. The benchmark uses 38,128 naturally caused FPA-FOD wildfire events as the national event backbone and aligns each event with public discovery-time or static information from FIRMS/VIIRS, gridMET, LANDFIRE, OpenStreetMap, and WorldPop. This makes it possible to study early wildfire escape risk using only information that can be known at, or before, fire discovery time.
 
-This repository provides the code needed to reproduce that protocol. `dataloader.py` converts the released canonical tables into tabular, temporal, spatial, and spatiotemporal model-ready caches. `train.py` evaluates classical and neural baselines under the same leakage-controlled setting. The summarization scripts aggregate full-input and ablation experiments so future work can compare against the same public benchmark instead of relying on private operational records or incompatible regional protocols.
+A central contribution is the WildfireIA input contract. The contract fixes the sample unit, label rule, chronological split, source groups, forbidden leakage columns, model-ready representations, and evaluation metrics. Under this contract, tabular, temporal, spatial, and spatiotemporal models receive comparable discovery-time inputs and are evaluated with the same protocol. As a result, WildfireIA supports horizontal comparison across model families instead of isolated experiments tied to private operational records, incompatible regional labels, or model-specific preprocessing.
+
+This repository provides the code needed to reproduce and reuse that protocol. `dataloader.py` converts the released canonical tables into model-ready caches. `train.py` evaluates classical and neural baselines under the leakage-controlled setting. The summarization scripts aggregate full-input and ablation experiments so future work can report against the same benchmark, add new models, or test new source combinations without redefining the task.
 
 ---
 
