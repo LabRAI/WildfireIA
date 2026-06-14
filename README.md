@@ -24,6 +24,10 @@ WildfireIA is an event-level benchmark for predicting whether a newly discovered
 
 Code is maintained by the Responsible AI Lab at Florida State University.
 
+<p align="center">
+  <img src="assets/pipeline2.png" alt="WildfireIA canonical pipeline and dataloader overview" width="95%">
+</p>
+
 ---
 
 ## What This Repository Provides
