@@ -6,6 +6,7 @@
   <a href="#quick-start"><img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python 3.10+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="MIT License"></a>
   <a href="https://github.com/LabRAI/WildfireIA/stargazers"><img src="https://img.shields.io/github/stars/LabRAI/WildfireIA?style=social" alt="GitHub stars"></a>
+  <a href="https://labrai.github.io/WildfireIA/"><img src="https://img.shields.io/badge/Project-Page-315d91.svg" alt="Project page"></a>
   <a href="https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA"><img src="https://img.shields.io/badge/HuggingFace-canonical%20data-yellow.svg" alt="Hugging Face dataset"></a>
   <a href="https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA"><img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fhuggingface.co%2Fapi%2Fdatasets%2FWildfireIA%2FAnonymous-WildfireIA&query=downloads&label=HF%20downloads&color=orange" alt="Hugging Face downloads"></a>
   <a href="#quick-start"><img src="https://img.shields.io/badge/reproducible-benchmark-lightgrey.svg" alt="Reproducible benchmark"></a>
@@ -14,6 +15,7 @@
 <p align="center">
   <a href="#how-to-cite">How To Cite</a> ·
   <a href="#what-are-we-doing">What Are We Doing?</a> ·
+  <a href="https://labrai.github.io/WildfireIA/">Project Page</a> ·
   <a href="#quick-start">Quick Start</a> ·
   <a href="#dataset-release">Dataset</a> ·
   <a href="#canonical-data-and-input-contracts">Input Contracts</a> ·

@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WildfireIA | Nationwide Wildfire Initial Attack Benchmark</title>
+  <meta name="description" content="A nationwide benchmark for wildfire initial attack failure prediction with public environmental data.">
+  <style>
+    :root {
+      --ink: #17201a;
+      --muted: #5b685f;
+      --soft: #f6f8f3;
+      --line: #dfe7dc;
+      --green: #28613d;
+      --green-dark: #173d29;
+      --amber: #c86f26;
+      --blue: #315d91;
+      --cream: #fffaf1;
+      --white: #ffffff;
+      --shadow: 0 18px 50px rgba(25, 42, 28, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--soft);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(223, 231, 220, 0.9);
+      background: rgba(246, 248, 243, 0.92);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 64px;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0;
+      color: var(--green-dark);
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background:
+        linear-gradient(135deg, rgba(40, 97, 61, 0.95), rgba(200, 111, 38, 0.9)),
+        var(--green);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .nav-links a:hover {
+      color: var(--green);
+    }
+
+    .hero {
+      background:
+        linear-gradient(180deg, rgba(255, 250, 241, 0.96), rgba(246, 248, 243, 1));
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-inner {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 72px 0 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 34px;
+    }
+
+    .eyebrow {
+      color: var(--amber);
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      color: var(--green-dark);
+      font-size: clamp(40px, 7vw, 78px);
+      line-height: 1.03;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 900px;
+      margin: 22px 0 0;
+      color: #344238;
+      font-size: clamp(18px, 2.4vw, 24px);
+      line-height: 1.45;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 18px;
+      border: 1px solid var(--green);
+      border-radius: 6px;
+      font-weight: 750;
+      color: var(--green-dark);
+      background: transparent;
+    }
+
+    .button.primary {
+      color: white;
+      background: var(--green);
+      box-shadow: 0 10px 24px rgba(40, 97, 61, 0.22);
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--green-dark);
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    section {
+      padding: 72px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 44px;
+      align-items: start;
+      margin-bottom: 34px;
+    }
+
+    .label {
+      color: var(--amber);
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--green-dark);
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .figure-frame {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .figure-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      padding: 22px;
+      min-height: 100%;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: var(--green-dark);
+      font-size: 20px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #eaf2e8;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .finding {
+      display: grid;
+      grid-template-columns: 90px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      border-top: 1px solid var(--line);
+      padding: 18px 0;
+    }
+
+    .finding:first-child {
+      border-top: 0;
+    }
+
+    .finding .rq {
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+
+    .finding h3 {
+      margin: 0 0 6px;
+      color: var(--green-dark);
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+
+    .finding p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .code-block {
+      position: relative;
+      margin: 0;
+      border: 1px solid #d8e1d5;
+      border-radius: 8px;
+      background: #101711;
+      color: #eff8ef;
+      overflow-x: auto;
+      box-shadow: var(--shadow);
+    }
+
+    pre {
+      margin: 0;
+      padding: 22px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    .release-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .release-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      padding: 18px;
+    }
+
+    .release-item strong {
+      display: block;
+      color: var(--green-dark);
+      margin-bottom: 6px;
+    }
+
+    .release-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer {
+      padding: 36px 0 54px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .nav-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 14px 0;
+      }
+
+      .nav-links {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .stats,
+      .grid.three,
+      .grid.two,
+      .release-list,
+      .section-head {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-inner {
+        padding-top: 48px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .finding {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .footer {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">W</span>
+        <span>WildfireIA</span>
+      </a>
+      <div class="nav-links">
+        <a href="#why">Why</a>
+        <a href="#contract">Input Contract</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#quickstart">Quick Start</a>
+        <a href="#release">Release</a>
+        <a href="#cite">Citation</a>
+      </div>
+    </div>
+  </nav>
+
+  <header id="top" class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow">Nationwide wildfire benchmark</div>
+        <h1>A Nationwide Benchmark for Wildfire Initial Attack Failure Prediction with Public Environmental Data</h1>
+        <p class="subtitle">WildfireIA defines a reproducible event-level benchmark for predicting whether a wildfire will escape initial attack using public information available at fire discovery time.</p>
+        <div class="cta-row">
+          <a class="button primary" href="https://github.com/LabRAI/WildfireIA">GitHub Repository</a>
+          <a class="button" href="assets/wildfireia-paper.pdf">Read the Paper</a>
+          <a class="button" href="https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA">Download Dataset</a>
+          <a class="button" href="#quickstart">Run the Benchmark</a>
+        </div>
+      </div>
+
+      <div class="stats" aria-label="Benchmark statistics">
+        <div class="stat">
+          <strong>38,128</strong>
+          <span>FPA-FOD natural wildfire events</span>
+        </div>
+        <div class="stat">
+          <strong>16</strong>
+          <span>baseline models</span>
+        </div>
+        <div class="stat">
+          <strong>4</strong>
+          <span>input representations</span>
+        </div>
+        <div class="stat">
+          <strong>5</strong>
+          <span>research questions</span>
+        </div>
+        <div class="stat">
+          <strong>53.3%</strong>
+          <span>best IA failure AUPRC</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="why">
+      <div class="section-head">
+        <div>
+          <div class="label">Why WildfireIA</div>
+          <h2>Initial attack prediction needs a reusable public benchmark.</h2>
+        </div>
+        <p class="lead">Initial attack failure is an event-level triage problem. Existing studies often rely on regional records, private operational variables, or incompatible evaluation choices. WildfireIA standardizes the task so public discovery-time inputs and model families can be compared under the same rules.</p>
+      </div>
+      <div class="grid three">
+        <article class="card">
+          <span class="tag">Public data</span>
+          <h3>Discovery-time information only.</h3>
+          <p>The benchmark links FPA-FOD wildfire events with FIRMS/VIIRS, gridMET, LANDFIRE, OpenStreetMap, and WorldPop while excluding outcome-derived and post-discovery leakage.</p>
+        </article>
+        <article class="card">
+          <span class="tag">Benchmark contract</span>
+          <h3>One task definition for many models.</h3>
+          <p>The input contract fixes sample units, labels, splits, source groups, forbidden columns, representations, and metrics so models can be compared horizontally.</p>
+        </article>
+        <article class="card">
+          <span class="tag">Reproducibility</span>
+          <h3>Canonical data to model-ready caches.</h3>
+          <p>The release provides canonical tables and code to regenerate tabular, temporal, spatial, and spatiotemporal caches without relying on hidden preprocessing steps.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="contract">
+      <div class="section-head">
+        <div>
+          <div class="label">Pipeline</div>
+          <h2>From public sources to comparable model inputs.</h2>
+        </div>
+        <p class="lead">WildfireIA separates canonicalization from model-cache generation. The same canonical tables can be reused to build different input protocols, ablations, and representation families.</p>
+      </div>
+      <div class="figure-frame">
+        <img src="assets/pipeline2.png" alt="WildfireIA canonical pipeline and dataloader overview">
+      </div>
+    </section>
+
+    <section id="benchmark">
+      <div class="section-head">
+        <div>
+          <div class="label">Benchmark questions</div>
+          <h2>Five questions connect the benchmark to wildfire science.</h2>
+        </div>
+        <p class="lead">The experiments are designed to test what public near-discovery data can and cannot explain, which sources matter, and whether the same input contract generalizes beyond binary IA failure.</p>
+      </div>
+
+      <div class="card">
+        <div class="finding">
+          <div class="rq">RQ1</div>
+          <div>
+            <h3>Full-source predictability</h3>
+            <p>Public discovery-time data contains meaningful but incomplete signal. XGBoost reaches 53.3% AUPRC over five seeds, while spatial and spatiotemporal models remain competitive but do not dominate event-level summaries.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="rq">RQ2</div>
+          <div>
+            <h3>Source necessity under full input</h3>
+            <p>FIRMS/VIIRS is the least redundant source. Removing discovery-day thermal evidence causes the largest AUPRC drop across representative models.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="rq">RQ3</div>
+          <div>
+            <h3>Static-source value without dynamic observations</h3>
+            <p>Fuel is the strongest static fallback source when weather history and discovery-day satellite detections are unavailable, but static context alone remains insufficient.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="rq">RQ4</div>
+          <div>
+            <h3>Weather-history sufficiency</h3>
+            <p>Longer weather histories do not consistently improve prediction. The strongest weather-only signal is usually concentrated near discovery day.</p>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="rq">RQ5</div>
+          <div>
+            <h3>Containment-duration signal</h3>
+            <p>Discovery-time inputs contain some severity signal, but containment duration is weakly explained, suggesting that post-discovery resources, tactics, and fire evolution dominate this target.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="models">
+      <div class="section-head">
+        <div>
+          <div class="label">Model coverage</div>
+          <h2>Classical and neural baselines under one evaluation protocol.</h2>
+        </div>
+        <p class="lead">WildfireIA evaluates tabular, temporal, spatial, and spatiotemporal prediction families with standardized metrics, prediction schemas, and output directories.</p>
+      </div>
+      <div class="grid two">
+        <article class="card">
+          <h3>Representation families</h3>
+          <p>Tabular models use event-level feature vectors. Temporal models use five-day weather and fire-danger sequences with static features. Spatial models use 29 x 29 event-centered patches. Spatiotemporal models use five-day patch sequences.</p>
+        </article>
+        <article class="card">
+          <h3>Metric suite</h3>
+          <p>Initial attack failure uses AUPRC, AUROC, Recall@5%, F1, Brier score, ECE, and standardized prediction files. Containment duration uses log-space training with hour-scale MAE, RMSE, MedianAE, R2, and Spearman correlation.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="quickstart">
+      <div class="section-head">
+        <div>
+          <div class="label">Run WildfireIA</div>
+          <h2>Clone, download canonical data, build caches, train.</h2>
+        </div>
+        <p class="lead">The Hugging Face release stores canonical benchmark tables. The GitHub repository regenerates model-ready caches and runs all supported baselines.</p>
+      </div>
+      <div class="code-block">
+        <pre><code>git clone https://github.com/LabRAI/WildfireIA.git
+cd WildfireIA
+
+python -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+
+python - <<'PY'
+from huggingface_hub import snapshot_download
+snapshot_download(
+    repo_id="WildfireIA/Anonymous-WildfireIA",
+    repo_type="dataset",
+    local_dir="hf_data",
+)
+PY
+
+mkdir -p data/canonical/raw_feature_tables
+rsync -a hf_data/data/canonical/raw_feature_tables/ data/canonical/raw_feature_tables/
+
+python dataloader.py \
+  --base_dir . \
+  --canonical_dir data/canonical/raw_feature_tables \
+  --output_dir data/cache/model_ready \
+  --task ia_failure \
+  --representation all \
+  --weather_days 5 \
+  --input_protocol all \
+  --overwrite
+
+python train.py \
+  --base_dir . \
+  --task ia_failure \
+  --experiment_type smoke \
+  --representation tabular \
+  --weather_days 5 \
+  --input_protocol all \
+  --model xgboost \
+  --seed 553371 \
+  --overwrite</code></pre>
+      </div>
+    </section>
+
+    <section id="release">
+      <div class="section-head">
+        <div>
+          <div class="label">Release contents</div>
+          <h2>Code, canonical data, cache builder, and summaries.</h2>
+        </div>
+        <p class="lead">The release is organized so researchers can either reproduce the paper protocol or build new model and source-combination experiments from the same canonical benchmark.</p>
+      </div>
+      <div class="release-list">
+        <a class="release-item" href="https://github.com/LabRAI/WildfireIA">
+          <strong>Code</strong>
+          <span>Pipeline, dataloader, training, and summarization scripts.</span>
+        </a>
+        <a class="release-item" href="https://huggingface.co/datasets/WildfireIA/Anonymous-WildfireIA">
+          <strong>Dataset</strong>
+          <span>Canonical tables and Croissant metadata.</span>
+        </a>
+        <a class="release-item" href="assets/wildfireia-paper.pdf">
+          <strong>Paper</strong>
+          <span>Preprint PDF for methods, experiments, and results.</span>
+        </a>
+        <a class="release-item" href="#cite">
+          <strong>Citation</strong>
+          <span>BibTeX for citing the benchmark.</span>
+        </a>
+      </div>
+    </section>
+
+    <section id="cite">
+      <div class="section-head">
+        <div>
+          <div class="label">Citation</div>
+          <h2>Cite WildfireIA.</h2>
+        </div>
+        <p class="lead">Please cite the benchmark if you use the data release, cache builder, input contract, evaluation protocol, or baseline results.</p>
+      </div>
+      <div class="code-block">
+        <pre><code>@misc{xu2026wildfireia,
+  title={A Nationwide Benchmark for Wildfire Initial Attack Failure Prediction with Public Environmental Data},
+  author={Xu, Runyang and Cheng, Xueqi and Dong, Yushun},
+  year={2026},
+  note={Preprint},
+  url={https://github.com/LabRAI/WildfireIA}
+}</code></pre>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>WildfireIA</div>
+      <div>Responsible AI Lab at Florida State University</div>
+    </footer>
+  </main>
+</body>
+</html>
